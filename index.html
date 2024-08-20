@@ -13,18 +13,18 @@
     <div class="container josefin-sans-container">
       <div class="media-player josefin-sans-media-player">
         <nav class="media-nav">
-          <div class="circle">
+          <div class="minify">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg> 
           </div>
-          <div class="bars">
+          <div class="bars" onclick="showPlaylist();">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z"/></svg>
           </div>
         </nav>
         <img id="media-thumbnail" class="media-img" src="img/vinyl-music-static.png"/>
         <div id="media-title" class="media-title josefin-sans-media-tags">Omoide</div>
         <div id="media-description" class="media-description josefin-sans-media-tags">by Tsukenichi Suzuki</div>
-        <audio id="media-player" controls preload="none">
-          <source id="media-player-src" src="media/audio/TsunekichiSuzuki-Omoide.m4a" type="audio/mp4">
+        <audio id="audio-player" controls preload="none">
+          <source id="audio-player-src" src="media/audio/TsunekichiSuzuki-Omoide.m4a" type="audio/mp4">
         </audio>
         <input type="range" value="0" name="media-seeker" id="media-seeker"/>
         <div class="controls">
@@ -39,6 +39,15 @@
             <svg id="btn-forward" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M52.5 440.6c-9.5 7.9-22.8 9.7-34.1 4.4S0 428.4 0 416L0 96C0 83.6 7.2 72.3 18.4 67s24.5-3.6 34.1 4.4L224 214.3l0 41.7 0 41.7L52.5 440.6zM256 352l0-96 0-128 0-32c0-12.4 7.2-23.7 18.4-29s24.5-3.6 34.1 4.4l192 160c7.3 6.1 11.5 15.1 11.5 24.6s-4.2 18.5-11.5 24.6l-192 160c-9.5 7.9-22.8 9.7-34.1 4.4s-18.4-16.6-18.4-29l0-64z"/></svg>
           </div>
         </div>
+        <dialog id="playlist">
+          <form method="dialog" accept-charset="utf-8">
+            <h1>Playlist</h1>
+            <ul id="playlist-list"></ul>
+            <button id="playlist-close" type="submit">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"/></svg>
+            </button>
+          </form>
+        </dialog>
       </div>
     </div>
     <div class="footer">

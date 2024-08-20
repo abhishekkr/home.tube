@@ -1,12 +1,23 @@
 const mediaThumbnail = document.getElementById('media-thumbnail');
-const mediaPlayer = document.getElementById('media-player');
-const mediaPlayerSrc = document.getElementById('media-player-src');
+const mediaPlayer = document.getElementById('audio-player');
+const mediaPlayerSrc = document.getElementById('audio-player-src');
 const mediaTitle = document.getElementById('media-title');
 const mediaDesc = document.getElementById('media-description');
 
 const mediaSeeker = document.getElementById('media-seeker');
 const btnPlay = document.getElementById('btn-play');
 const btnPause = document.getElementById('btn-pause');
+
+const playlistDialog = document.getElementById('playlist');
+const playlistDlgList = document.getElementById('playlist-list');
+
+const audioJsonUrl = "media/audio.json";
+
+var audioContent = {};
+setAudioContent = function(content) {
+  audioContent = content;
+};
+
 
 class MediaContent {
   constructor(name, url) {
@@ -24,21 +35,43 @@ class MediaContent {
   }
 }
 
-var audioContent = {};
-var contentToPlay;
+const playnow = (adoKey) => {
+    let contentToPlay = new MediaContent(adoKey, audioContent[adoKey]);
+    console.log(contentToPlay);
+    // playlistDialog.style.display = 'none';
+    contentToPlay.play();
+    mediaPlayer.play();
+};
+
+function createPlaylistEntryNode(adoIdx, ado) {
+  let li = document.createElement('li');
+  li.className = 'playlist-entry';
+  li.setAttribute("id", "audio-"+adoIdx);
+  li.setAttribute("data-url", audioContent[ado]);
+  let lineHTML = `<div class="playlist-playnow" onclick="playnow('${ado}');">
+      <svg class="playlist-playbtn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c-7.6 4.2-12.3 12.3-12.3 20.9l0 176c0 8.7 4.7 16.7 12.3 20.9s16.8 4.1 24.3-.5l144-88c7.1-4.4 11.5-12.1 11.5-20.5s-4.4-16.1-11.5-20.5l-144-88c-7.4-4.5-16.7-4.7-24.3-.5z"/></svg>
+    </div> ${ado}`;
+  li.innerHTML = lineHTML;
+  return li;
+}
+
 const request = new XMLHttpRequest();
 try {
-  request.open("GET", "media/audio.json");
+  request.open("GET", audioJsonUrl);
   request.responseType = "json";
   request.addEventListener("load", () => {
       // audioContent = JSON.parse(request.response);
-      audioContent = request.response;
+      setAudioContent(request.response);
+      let adoIdx = 0;
       for (ado in audioContent) {
-        console.log(ado);
-        contentToPlay = new MediaContent(ado, audioContent[ado]);
-        break;
-        // all will be managed later; when Selection/Playlist is in play
+        adoIdx += 1;
+        console.log(adoIdx, ado);
+        let li = createPlaylistEntryNode(adoIdx, ado);
+        playlistDlgList.appendChild(li);
       }
+
+      let firstSongKey = Object.keys(audioContent)[0];
+      let contentToPlay = new MediaContent(firstSongKey, audioContent[firstSongKey]);
       console.log(contentToPlay);
       contentToPlay.play();
   });
@@ -104,6 +137,10 @@ const playBackward = function() {
 
 const playForward = function() {
   mediaPlayer.currentTime += 5;
+};
+
+const showPlaylist = function() {
+  playlistDialog.showModal();
 };
 
 

@@ -106,6 +106,7 @@ audio {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  -ms-appearance: none;
   -o-appearance: none;
   width: 100%;
   height: 5px;
@@ -121,6 +122,7 @@ audio {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  -ms-appearance: none;
   -o-appearance: none;
   width: 20px;
   height: 20px;
@@ -177,6 +179,94 @@ audio {
   display: none;
 }
 
-#media-player {
+#audio-player {
   display: none;
+}
+
+#playlist {
+  width: 90%;
+  height: 90%;
+  padding: 25px;
+  border-radius: 1em;
+  border: 5px solid #fff;
+  text-align: center;
+  background: #b3ffff;
+
+  opacity: 1;
+  transform: scale(1);
+  transition: all 0.2s ease-in-out;
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -ms-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+}
+
+#playlist::backdrop {
+  background: #fff9;
+  background-filter: blur(1px);
+}
+
+#playlist form {
+  width: 100%;
+}
+
+#playlist button {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  border-style: hidden;
+  background: #b3ffff;
+}
+
+#playlist-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+#playlist-close svg {
+  height: 30px;
+  width: 100%;
+  fill: #00570e;
+}
+
+#playlist-list {
+  display: inline-flex;
+  flex-direction: column;
+  padding-top: 25px;
+  padding-left: 25px;
+  font-size: 1.5em;
+  line-height: 1.5em;
+
+  list-style-type: none;
+}
+
+.playlist-entry {
+  display: inline-flex;
+  align-items: left;
+  justify-content: left;
+  text-align: left;
+}
+
+.playlist-playnow {
+  display: inline;
+  align-items: flex-start;
+  padding: 2px 5px 0px 0px;
+}
+
+.playlist-entry svg {
+  height: 20px;
+  width: 100%;
+  fill: #00af05;
 }
