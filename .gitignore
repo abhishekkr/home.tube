@@ -1,0 +1,14 @@
+*swn
+*swo
+*swp
+*~
+*.tmp
+temp/*
+media/*
+.bundle
+.venv
+.goenv
+.config
+*.cfg
+*.lock
+*.sock
