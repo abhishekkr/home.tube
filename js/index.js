@@ -16,6 +16,8 @@ const queuelistDlgList = document.getElementById('queuelist-list');
 
 const audioJsonUrl = "media/audio.json";
 
+var nowPlayingItem = false;
+
 var audioContent = {};
 setAudioContent = function(content) {
   audioContent = content;
@@ -23,11 +25,12 @@ setAudioContent = function(content) {
 
 
 class MediaContent {
-  constructor(name, url) {
+  constructor(qid, name, url) {
     let split_name = name.split(" - ");
     this.title = split_name[0];
     this.description = split_name[1];
     this.url = url;
+    this.qid = qid;
   }
 
   play(){
@@ -38,18 +41,39 @@ class MediaContent {
   }
 }
 
-const playNow = (mediaId) => {
-    let liElement = document.getElementById(mediaId);
-    let mediaName = liElement.getAttribute('data-name');
-    let mediaUrl = liElement.getAttribute('data-url');
-    let contentToPlay = new MediaContent(mediaName, mediaUrl);
-    console.log(contentToPlay);
-    // playlistDialog.style.display = 'none';
-    mediaPlayer.pause();
-    mediaPlayer.currentTime = 0;
-    contentToPlay.play();
-    mediaPlayer.play();
+const playByElement = (elem) => {
+  let mediaName = elem.getAttribute('data-name');
+  let mediaUrl = elem.getAttribute('data-url');
+  let inList = elem.getAttribute('data-list');
+  let qid = -1;
+  if (elem.getAttributeNames().includes('data-qid')) {
+    qid = elem.getAttribute('data-qid');
+  }
+  let contentToPlay = new MediaContent(qid, mediaName, mediaUrl);
+  // playlistDialog.style.display = 'none';
+  mediaPlayer.pause();
+  mediaPlayer.currentTime = 0;
+  contentToPlay.play();
+  mediaPlayer.play();
 };
+
+const playNow = (mediaId) => {
+  let liElement = document.getElementById(mediaId);
+  playByElement(liElement);
+  nowPlayingItem = liElement;
+};
+
+const playNext = () => {
+  if (!nowPlayingItem) {
+    console.log("No queued list or playlist in action.");
+    return;
+  }
+  let liElement = nowPlayingItem.nextElementSibling;
+  if (liElement) {
+    playByElement(liElement);
+    nowPlayingItem = liElement;
+  }
+}
 
 const prepareMediaId = (idx) => {
   return `media-${idx}`;
@@ -57,8 +81,8 @@ const prepareMediaId = (idx) => {
 
 const queueAdd = (mediaId) => {
   console.log(`Queue Add: ${mediaId}`);
+  let queuedCount = queuelistDlgList.getElementsByClassName('media-list-entry').length;
   let liElement = document.getElementById(mediaId);
-  console.log(liElement);
   playlistDlgList.removeChild(liElement);
   // update li
   let mediaListQueueAdd = liElement.getElementsByClassName('media-list-queueadd')[0];
@@ -67,13 +91,14 @@ const queueAdd = (mediaId) => {
   let queueRmHtml = `<svg class="media-list-removebtn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM184 232l144 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-144 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z"/></svg>`;
   mediaListQueueAdd.innerHTML = queueRmHtml;
   liElement.getElementsByClassName('media-list-queueadd')[0] = mediaListQueueAdd;
+  liElement.setAttribute("data-qid", queuedCount);
+  liElement.setAttribute("data-list", "queued");
   queuelistDlgList.appendChild(liElement);
 };
 
 const queueRemove = (mediaId) => {
   console.log(`Queue Remove: ${mediaId}`);
   let liElement = document.getElementById(mediaId);
-  console.log(liElement);
   queuelistDlgList.removeChild(liElement);
   // update li
   let mediaListQueueRm = liElement.getElementsByClassName('media-list-queuerm')[0];
@@ -82,6 +107,7 @@ const queueRemove = (mediaId) => {
   let queueAddHtml = `<svg class="media-list-queuebtn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>`;
   mediaListQueueRm.innerHTML = queueAddHtml;
   liElement.getElementsByClassName('media-list-queueadd')[0] = mediaListQueueRm;
+  liElement.setAttribute("data-list", "playlist");
   playlistDlgList.appendChild(liElement);
 };
 
@@ -122,7 +148,7 @@ try {
       }
 
       let firstSongKey = Object.keys(audioContent)[0];
-      let contentToPlay = new MediaContent(firstSongKey, audioContent[firstSongKey]);
+      let contentToPlay = new MediaContent(-1, firstSongKey, audioContent[firstSongKey]);
       console.log(contentToPlay);
       contentToPlay.play();
   });
@@ -161,6 +187,7 @@ mediaPlayer.addEventListener('ended', () => {
   mediaThumbnail.src = 'img/vinyl-music-static.png';
   btnPause.style.display = 'none';
   btnPlay.style.display = 'block';
+  playNext();
 });
 
 mediaPlayer.addEventListener('loadedmetadata', () => {
