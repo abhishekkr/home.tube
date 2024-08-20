@@ -53,7 +53,7 @@
   margin-bottom: 30px;
 }
 
-.media-nav .circle, .bars {
+.media-nav .minify, .navlist {
   border-radius: 50%;
   width: 30px;
   height: 30px;
@@ -138,7 +138,7 @@ audio {
   justify-content: space-between;
 }
 
-.controls .backward, .forward, .play-pause {
+.controls .backward, .forward, .play-pause, .queue-list {
   margin: 10px;
   border-radius: 50%;
   border: 3px solid #00d724;
@@ -179,11 +179,24 @@ audio {
   display: none;
 }
 
+.controls .queue-list {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+}
+
+.controls #btn-queue-list {
+  height: 25px;
+  width: 100%;
+  fill: #1dfd81;
+  margin: 2px;
+}
+
 #audio-player {
   display: none;
 }
 
-#playlist {
+.media-list-dlg {
   width: 90%;
   height: 90%;
   padding: 25px;
@@ -208,16 +221,16 @@ audio {
   transform: translateX(-50%) translateY(-50%);
 }
 
-#playlist::backdrop {
+.media-list-dlg::backdrop {
   background: #fff9;
   background-filter: blur(1px);
 }
 
-#playlist form {
+.media-list-dlg form {
   width: 100%;
 }
 
-#playlist button {
+.media-list-dlg button {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -227,7 +240,7 @@ audio {
   background: #b3ffff;
 }
 
-#playlist-close {
+.media-list-close {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -235,13 +248,13 @@ audio {
   padding-right: 2px;
 }
 
-#playlist-close svg {
+.media-list-close svg {
   height: 30px;
   width: 100%;
   fill: #00570e;
 }
 
-#playlist-list {
+.media-list-list {
   display: inline-flex;
   flex-direction: column;
   padding-top: 25px;
@@ -252,20 +265,20 @@ audio {
   list-style-type: none;
 }
 
-.playlist-entry {
+.media-list-entry {
   display: inline-flex;
   align-items: left;
   justify-content: left;
   text-align: left;
 }
 
-.playlist-playnow {
+.media-list-playnow, .media-list-queueadd, .media-list-queuerm {
   display: inline;
   align-items: flex-start;
   padding: 2px 5px 0px 0px;
 }
 
-.playlist-entry svg {
+.media-list-entry svg {
   height: 20px;
   width: 100%;
   fill: #00af05;

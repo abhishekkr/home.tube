@@ -11,6 +11,9 @@ const btnPause = document.getElementById('btn-pause');
 const playlistDialog = document.getElementById('playlist');
 const playlistDlgList = document.getElementById('playlist-list');
 
+const queuelistDialog = document.getElementById('queuelist-dlg');
+const queuelistDlgList = document.getElementById('queuelist-list');
+
 const audioJsonUrl = "media/audio.json";
 
 var audioContent = {};
@@ -35,24 +38,72 @@ class MediaContent {
   }
 }
 
-const playnow = (adoKey) => {
-    let contentToPlay = new MediaContent(adoKey, audioContent[adoKey]);
+const playNow = (mediaId) => {
+    let liElement = document.getElementById(mediaId);
+    let mediaName = liElement.getAttribute('data-name');
+    let mediaUrl = liElement.getAttribute('data-url');
+    let contentToPlay = new MediaContent(mediaName, mediaUrl);
     console.log(contentToPlay);
     // playlistDialog.style.display = 'none';
+    mediaPlayer.pause();
+    mediaPlayer.currentTime = 0;
     contentToPlay.play();
     mediaPlayer.play();
 };
 
+const prepareMediaId = (idx) => {
+  return `media-${idx}`;
+};
+
+const queueAdd = (mediaId) => {
+  console.log(`Queue Add: ${mediaId}`);
+  let liElement = document.getElementById(mediaId);
+  console.log(liElement);
+  playlistDlgList.removeChild(liElement);
+  // update li
+  let mediaListQueueAdd = liElement.getElementsByClassName('media-list-queueadd')[0];
+  mediaListQueueAdd.className = 'media-list-queuerm';
+  mediaListQueueAdd.onclick = () => { queueRemove(`${mediaId}`); };
+  let queueRmHtml = `<svg class="media-list-removebtn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM184 232l144 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-144 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z"/></svg>`;
+  mediaListQueueAdd.innerHTML = queueRmHtml;
+  liElement.getElementsByClassName('media-list-queueadd')[0] = mediaListQueueAdd;
+  queuelistDlgList.appendChild(liElement);
+};
+
+const queueRemove = (mediaId) => {
+  console.log(`Queue Remove: ${mediaId}`);
+  let liElement = document.getElementById(mediaId);
+  console.log(liElement);
+  queuelistDlgList.removeChild(liElement);
+  // update li
+  let mediaListQueueRm = liElement.getElementsByClassName('media-list-queuerm')[0];
+  mediaListQueueRm.className = 'media-list-queueadd';
+  mediaListQueueRm.onclick = () => { queueAdd(`${mediaId}`); };
+  let queueAddHtml = `<svg class="media-list-queuebtn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>`;
+  mediaListQueueRm.innerHTML = queueAddHtml;
+  liElement.getElementsByClassName('media-list-queueadd')[0] = mediaListQueueRm;
+  playlistDlgList.appendChild(liElement);
+};
+
 function createPlaylistEntryNode(adoIdx, ado) {
+  let mediaId = prepareMediaId(adoIdx);
   let li = document.createElement('li');
-  li.className = 'playlist-entry';
-  li.setAttribute("id", "audio-"+adoIdx);
+  li.className = 'media-list-entry';
+  li.setAttribute("id", mediaId);
+  li.setAttribute("data-name", ado);
   li.setAttribute("data-url", audioContent[ado]);
-  let lineHTML = `<div class="playlist-playnow" onclick="playnow('${ado}');">
-      <svg class="playlist-playbtn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c-7.6 4.2-12.3 12.3-12.3 20.9l0 176c0 8.7 4.7 16.7 12.3 20.9s16.8 4.1 24.3-.5l144-88c7.1-4.4 11.5-12.1 11.5-20.5s-4.4-16.1-11.5-20.5l-144-88c-7.4-4.5-16.7-4.7-24.3-.5z"/></svg>
+  let lineHTML = `<div class="media-list-playnow" onclick="playNow('${mediaId}');">
+      <svg class="media-list-playbtn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c-7.6 4.2-12.3 12.3-12.3 20.9l0 176c0 8.7 4.7 16.7 12.3 20.9s16.8 4.1 24.3-.5l144-88c7.1-4.4 11.5-12.1 11.5-20.5s-4.4-16.1-11.5-20.5l-144-88c-7.4-4.5-16.7-4.7-24.3-.5z"/></svg>
+    </div>
+    <div class="media-list-queueadd" onclick="queueAdd('${mediaId}');">
+      <svg class="media-list-queuebtn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>
     </div> ${ado}`;
   li.innerHTML = lineHTML;
   return li;
+}
+
+function changeListEntryToQueue(mediaId, liElement) {
+  return;
 }
 
 const request = new XMLHttpRequest();
@@ -141,6 +192,10 @@ const playForward = function() {
 
 const showPlaylist = function() {
   playlistDialog.showModal();
+};
+
+const showQueueList = function() {
+  queuelistDialog.showModal();
 };
 
 
