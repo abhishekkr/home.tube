@@ -115,31 +115,9 @@ audio {
   margin: 40px 0px;
 }
 
-#media-seeker::-webkit-slider-thumb {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  -o-appearance: none;
-  width: 20px;
-  height: 20px;
-  background: #22ffdd;
-  border-radius: 50%;
-  border: 5px solid #00410b;
-  box-shadow: 0 5px 5px rgba(255, 26, 26,  0.25);
-}
-#media-seeker::-moz-slider-thumb {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  -o-appearance: none;
-  width: 20px;
-  height: 20px;
-  background: #22ffdd;
-  border-radius: 50%;
-  border: 5px solid #00410b;
-  box-shadow: 0 5px 5px rgba(255, 26, 26,  0.25);
-}
-#media-seeker::-o-slider-thumb {
+#media-seeker::-webkit-slider-thumb,
+#media-seeker::-moz-range-thumb,
+#media-seeker::-ms-thumb {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
