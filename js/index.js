@@ -14,7 +14,14 @@ const playlistDlgList = document.getElementById('playlist-list');
 const queuelistDialog = document.getElementById('queuelist-dlg');
 const queuelistDlgList = document.getElementById('queuelist-list');
 
+const visualizerDialog = document.getElementById('visualizer-dlg');
+const visBtnPlay = document.getElementById('vis-btn-play');
+const visBtnPause = document.getElementById('vis-btn-pause');
+const visMediaThumbnail = document.getElementById('vis-media-thumbnail');
+
 const audioJsonUrl = "media/audio.json";
+const vinylPlayingImgUrl = "img/music.gif";
+const vinylPausedImgUrl = "img/vinyl-music-static.png";
 
 var nowPlayingItem = false;
 
@@ -40,6 +47,20 @@ class MediaContent {
     mediaDesc.innerHTML = this.description;
   }
 }
+
+const togglePlayPauseBtns = () => {
+  if (mediaPlayer.paused) {
+    btnPause.style.display = 'none';
+    btnPlay.style.display = 'block';
+    visBtnPause.style.display = 'none';
+    visBtnPlay.style.display = 'block';
+  } else {
+    btnPause.style.display = 'block';
+    btnPlay.style.display = 'none';
+    visBtnPause.style.display = 'block';
+    visBtnPlay.style.display = 'none';
+  }
+};
 
 const playByElement = (elem) => {
   let mediaName = elem.getAttribute('data-name');
@@ -163,9 +184,9 @@ var syncTheSeeker = false;
 var syncTheSeekerTimer;
 
 mediaPlayer.addEventListener('play', () => {
-  mediaThumbnail.src = 'img/music.gif';
-  btnPause.style.display = 'block';
-  btnPlay.style.display = 'none';
+  mediaThumbnail.src = vinylPlayingImgUrl;
+  visMediaThumbnail.src = vinylPlayingImgUrl;
+  togglePlayPauseBtns();
   if (syncTheSeekerTimer) {
     clearInterval(syncTheSeekerTimer);
   }
@@ -175,18 +196,19 @@ mediaPlayer.addEventListener('play', () => {
         clearInterval(syncTheSeekerTimer);
       }
     }, 500);
+  visualizerFn();
 });
 
 mediaPlayer.addEventListener('pause', () => {
-  mediaThumbnail.src = 'img/vinyl-music-static.png';
-  btnPause.style.display = 'none';
-  btnPlay.style.display = 'block';
+  mediaThumbnail.src = vinylPausedImgUrl;
+  visMediaThumbnail.src = vinylPausedImgUrl;
+  togglePlayPauseBtns();
 });
 
 mediaPlayer.addEventListener('ended', () => {
-  mediaThumbnail.src = 'img/vinyl-music-static.png';
-  btnPause.style.display = 'none';
-  btnPlay.style.display = 'block';
+  mediaThumbnail.src = vinylPausedImgUrl;
+  visMediaThumbnail.src = vinylPausedImgUrl;
+  togglePlayPauseBtns();
   playNext();
 });
 
@@ -202,11 +224,7 @@ mediaSeeker.addEventListener('change', () => {
 });
 
 const playPause = function(){
-  if (mediaPlayer.paused) {
-    mediaPlayer.play();
-  } else {
-    mediaPlayer.pause();
-  }
+  mediaPlayer.paused ? mediaPlayer.play() : mediaPlayer.pause();
 };
 
 const playBackward = function() {
@@ -215,6 +233,10 @@ const playBackward = function() {
 
 const playForward = function() {
   mediaPlayer.currentTime += 5;
+};
+
+const showVisualization = function() {
+  visualizerDialog.showModal();
 };
 
 const showPlaylist = function() {
@@ -231,3 +253,44 @@ function logEvent(event) {
   console.log(event);
 }
 mediaPlayer.addEventListener("error", logEvent);
+
+// audio animation
+const visualizerFn = () => {
+  const visualizer = document.querySelector('.visualizer');
+  var audioContext = window.AudioContext || window.webkitAudioContext;
+  const ctx = new audioContext();
+  const analyser = ctx.createAnalyser();
+  const source = ctx.createMediaElementSource(mediaPlayer);
+  source.connect(analyser);
+  source.connect(ctx.destination);
+  analyser.fftSize = 64;
+  const bufferLength = analyser.frequencyBinCount;
+
+  let dataArray = new Uint8Array(bufferLength);
+  let visElements = [];
+  for(let i = 0; i < bufferLength; i++) {
+      const elem = document.createElement('span');
+      elem.classList.add('vis-elem');
+      visElements.push(elem);
+      visualizer.appendChild(elem);
+  }
+
+  const clamp = (num, min, max) => {
+      if(num >= max) return max;
+      if(num <= min) return min;
+      return num;
+    };
+
+  const update = () => {
+      requestAnimationFrame(update);
+      analyser.getByteFrequencyData(dataArray);
+      for (let i = 0; i < bufferLength; i++) {
+          let item = dataArray[i];
+          let clampValue = clamp(item, 100, 150);
+          let rotateZValue = i * (360 / bufferLength);
+          item = item > 150 ? item / 1.5 : item * 1.5;
+          visElements[i].style.transform = `rotateZ(${rotateZValue}deg) translate(-50%, ${clampValue}px)`;
+      }
+  };
+  update();
+};
